@@ -37,12 +37,32 @@ using OpenMcdf;
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace TestCases.POIFS.FileSystem
 {
     public class TestEncryptXlsx
     {
+        
+        static TestEncryptXlsx()
+        {
+            // macOSの時だけ実行
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                try
+                {
+                    ICSharpCode.SharpZipLib.Zip.ZipStrings.CodePage = 65001; // UTF-8
+                }
+                catch
+                {
+                    // 既に初期化されている場合は無視
+                }
+                
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            }
+        }        
+        
         private static bool TestDecryption(string encryptedPath, string password)
         {
             try
