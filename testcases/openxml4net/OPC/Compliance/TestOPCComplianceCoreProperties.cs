@@ -135,8 +135,12 @@ namespace TestCases.OpenXml4Net.OPC.Compliance
             Stream is1 = OpenXml4NetTestDataSamples.OpenComplianceSampleStream("OPCCompliance_CoreProperties_OnlyOneCorePropertiesPart.docx");
             OPCPackage pkg;
             pkg = OPCPackage.Open(is1);
-
+            
+#if NETCOREAPP || NETSTANDARD2_1_OR_GREATER
             Uri partUri = CreateURI("/docProps/core2.xml");
+#else
+            Uri partUri = new Uri("/docProps/core2.xml", UriKind.Relative);
+#endif
             try
             {
                 pkg.AddRelationship(PackagingUriHelper.CreatePartName(partUri), TargetMode.Internal,
@@ -167,7 +171,12 @@ namespace TestCases.OpenXml4Net.OPC.Compliance
             pkg = OPCPackage.Open(POIDataSamples.GetOpenXML4JInstance().GetFile(sampleFileName));
 
 
+#if NETCOREAPP || NETSTANDARD2_1_OR_GREATER
             Uri partUri = CreateURI("/docProps/core2.xml");
+#else
+            Uri partUri = new Uri("/docProps/core2.xml", UriKind.Relative);
+#endif            
+            
             try
             {
                 pkg.CreatePart(PackagingUriHelper.CreatePartName(partUri),

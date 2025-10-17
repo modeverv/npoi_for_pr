@@ -111,10 +111,18 @@ namespace TestCases.OpenXml4Net.OPC.Compliance
         {
             String[] validNames = { "/xml/item1.xml", "/document.xml",
                 "/a/%D1%86.xml" };
-            foreach (String s in validNames)
+            foreach(String s in validNames)
+            {
+#if NETCOREAPP || NETSTANDARD2_1_OR_GREATER
+                var uri = new Uri(s, UriKind.RelativeOrAbsolute);
+#else
+                var uri = new Uri(s, UriKind.Relative);
+#endif
                 ClassicAssert.IsTrue(
-                        PackagingUriHelper.IsValidPartName(new Uri(s, UriKind.RelativeOrAbsolute)),
-                        "This part name SHOULD be valid: " + s);
+                    PackagingUriHelper.IsValidPartName(uri),
+                    "This part name SHOULD be valid: " + s);
+                
+            }
         }
 
         /**
@@ -164,12 +172,19 @@ namespace TestCases.OpenXml4Net.OPC.Compliance
             String[] validNames = { "/doc&.xml" };
             try
             {
-                foreach (String s in validNames)
+                foreach(String s in validNames)
+                {
+#if NETCOREAPP || NETSTANDARD2_1_OR_GREATER
+                   var uri = new Uri(s, UriKind.RelativeOrAbsolute);
+#else
+                   var uri = new Uri(s, UriKind.Relative);
+#endif
+                    bool valid = PackagingUriHelper.IsValidPartName(uri);
+
                     ClassicAssert.IsTrue(
-                            PackagingUriHelper
-                                    .IsValidPartName(new Uri(s, UriKind.RelativeOrAbsolute)),
-                                    "A segment shall not contain non pchar characters [M1.6] : "
-                                    + s);
+                        valid,
+                        $"Part name should be valid after encoding: {s}");
+                }
             }
             catch (UriFormatException e)
             {
